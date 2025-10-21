@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkyView - Previsão do Tempo</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>☀️ SkyView</h1>
+        
+        <div class="search-box">
+            <input 
+                type="text" 
+                id="cityInput" 
+                placeholder="Digite o nome da cidade" 
+                autocomplete="off"
+            />
+            <button id="searchBtn">Buscar</button>
+        </div>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Carregando...</p>
+        </div>
+        
+        <div class="error" id="error"></div>
+        
+        <div class="weather-info" id="weatherInfo">
+            <h2 class="location" id="location"></h2>
+            <div class="temperature" id="temperature"></div>
+            
+            <div class="details">
+                <div class="detail-item">
+                    <div class="detail-label">Umidade</div>
+                    <div class="detail-value" id="humidity"></div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Vento</div>
+                    <div class="detail-value" id="windSpeed"></div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Precipitação</div>
+                    <div class="detail-value" id="precipitation"></div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Pressão</div>
+                    <div class="detail-value" id="pressure"></div>
+                </div>
+            </div>
+
+            <!-- Nova seção de previsão de 7 dias -->
+            <div class="forecast-section">
+                <h3 class="forecast-title">📅 Próximos 7 Dias</h3>
+                <div class="forecast-container" id="forecastContainer">
+                    <!-- Os cards de previsão serão inseridos aqui dinamicamente -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
