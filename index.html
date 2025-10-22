@@ -1,65 +1,120 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SkyView - Previsão do Tempo</title>
-    <link rel="stylesheet" href="css/styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SkyView - Previsão do Tempo</title>
+  <link rel="stylesheet" href="css/styles.css"/>
 </head>
 <body>
-    <div class="container">
-        <h1>☀️ SkyView</h1>
-        
-        <div class="search-box">
-            <input 
-                type="text" 
-                id="cityInput" 
-                placeholder="Digite o nome da cidade" 
-                autocomplete="off"
-            />
-            <button id="searchBtn">Buscar</button>
-        </div>
-        
-        <div class="loading" id="loading">
-            <div class="spinner"></div>
-            <p>Carregando...</p>
-        </div>
-        
-        <div class="error" id="error"></div>
-        
-        <div class="weather-info" id="weatherInfo">
-            <h2 class="location" id="location"></h2>
-            <div class="temperature" id="temperature"></div>
-            
-            <div class="details">
-                <div class="detail-item">
-                    <div class="detail-label">Umidade</div>
-                    <div class="detail-value" id="humidity"></div>
-                </div>
-                <div class="detail-item">
-                    <div class="detail-label">Vento</div>
-                    <div class="detail-value" id="windSpeed"></div>
-                </div>
-                <div class="detail-item">
-                    <div class="detail-label">Precipitação</div>
-                    <div class="detail-value" id="precipitation"></div>
-                </div>
-                <div class="detail-item">
-                    <div class="detail-label">Pressão</div>
-                    <div class="detail-value" id="pressure"></div>
-                </div>
-            </div>
+  <canvas id="bg-canvas"></canvas>
 
-            <!-- Nova seção de previsão de 7 dias -->
-            <div class="forecast-section">
-                <h3 class="forecast-title">📅 Próximos 7 Dias</h3>
-                <div class="forecast-container" id="forecastContainer">
-                    <!-- Os cards de previsão serão inseridos aqui dinamicamente -->
-                </div>
-            </div>
-        </div>
+  <div class="container">
+    <h1>☀️ SkyView</h1>
+
+    <div class="search-box search-autocomplete">
+      <input type="text" id="cityInput" placeholder="Digite o nome da cidade" autocomplete="off"/>
+      <button id="searchBtn">Buscar</button>
+      <ul id="suggestions" class="suggestions" aria-label="Sugestões de cidades"></ul>
     </div>
-    
-    <script type="module" src="js/main.js"></script>
+
+    <div class="actions-bar">
+      <button id="geoBtn" class="btn-secondary">Usar minha localização</button>
+      <button id="favBtn" class="btn-secondary">Salvar cidade</button>
+
+      <div class="favorites">
+        <label>Favoritos:</label>
+        <div id="favChips" class="chips"></div>
+      </div>
+
+      <div class="i18n-bar">
+        <label for="langSelect">Idioma:</label>
+        <select id="langSelect">
+          <option value="pt">Português</option>
+          <option value="en">English</option>
+          <option value="es">Español</option>
+        </select>
+      </div>
+
+      <div class="units-bar">
+        <label for="unitSelect">Unidades:</label>
+        <select id="unitSelect">
+          <option value="metric">°C, km/h, mm</option>
+          <option value="imperial">°F, mph, in</option>
+        </select>
+      </div>
+
+      <div class="theme-bar">
+        <label for="themeToggle">Tema:</label>
+        <select id="themeToggle">
+          <option value="system">Sistema</option>
+          <option value="light">Claro</option>
+          <option value="dark">Escuro</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="alerts" class="alerts" aria-live="polite"></div>
+
+    <div class="loading" id="loading">
+      <div class="spinner"></div>
+      <p>Carregando...</p>
+    </div>
+
+    <div class="error" id="error"></div>
+
+    <div class="weather-info" id="weatherInfo">
+      <h2 class="location" id="location"></h2>
+      <div class="temperature" id="temperature"></div>
+
+      <div class="details">
+        <div class="detail-item">
+          <div class="detail-label" id="lblHumidity">Umidade</div>
+          <div class="detail-value" id="humidity"></div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label" id="lblWind">Vento</div>
+          <div class="detail-value" id="windSpeed"></div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label" id="lblPrec">Precipitação</div>
+          <div class="detail-value" id="precipitation"></div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label" id="lblPress">Pressão</div>
+          <div class="detail-value" id="pressure"></div>
+        </div>
+      </div>
+
+      <div class="forecast-section">
+        <h3 class="forecast-title" id="titleNext7">📅 Próximos 7 Dias</h3>
+        <div class="forecast-rail">
+          <div class="forecast-container" id="forecastContainer"></div>
+        </div>
+      </div>
+
+      <div class="hourly-section">
+        <h3 class="forecast-title" id="titleHourly">🕒 Hoje por hora</h3>
+        <div id="hourlyWrap" class="hourly-wrap">
+          <canvas id="hourlyTemp" height="120"></canvas>
+          <canvas id="hourlyRain" height="80" style="margin-top:12px"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tip Card -->
+  <div id="tipCard" class="tip-card" hidden>
+    <div class="tip-header">
+      <span>💡 Dica do dia</span>
+      <button id="tipClose" aria-label="Fechar">×</button>
+    </div>
+    <div id="tipText" class="tip-text"></div>
+    <div class="tip-actions">
+      <button id="tipNext" class="btn-secondary">Outra dica</button>
+    </div>
+  </div>
+
+  <script type="module" src="js/main.js"></script>
 </body>
 </html>
